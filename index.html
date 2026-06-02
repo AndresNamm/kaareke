@@ -48,10 +48,6 @@
         </nav>
 
         <div class="sidebar-footer">
-          <button id="btn-settings" class="footer-btn">
-            <i data-lucide="settings" class="footer-btn-icon"></i>
-            <span>Settings</span>
-          </button>
         </div>
       </aside>
 
@@ -73,10 +69,6 @@
           <i data-lucide="info"></i>
           <span>About</span>
         </button>
-        <button id="mobile-btn-settings" class="mobile-nav-item">
-          <i data-lucide="settings"></i>
-          <span>Settings</span>
-        </button>
       </nav>
 
       <!-- Main Panel -->
@@ -88,10 +80,6 @@
             <p class="current-date-display" id="date-display">Tuesday, June 2, 2026</p>
           </div>
           <div class="header-right">
-            <span id="data-status-badge" class="status-badge local">
-              <span class="status-dot"></span>
-              <span class="status-text">Local CSV</span>
-            </span>
           </div>
         </header>
 
@@ -221,59 +209,6 @@
 
         </div>
       </main>
-
-      <!-- Settings Modal -->
-      <div class="modal-overlay" id="settings-modal">
-        <div class="modal">
-          <div class="modal-header">
-            <h3>Configuration & Settings</h3>
-            <button id="btn-close-settings" class="modal-close-btn">
-              <i data-lucide="x"></i>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="settings-sheet-url">Google Sheets CSV URL</label>
-              <input type="url" id="settings-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" />
-              <small class="form-help">
-                To sync your schedule: Publish your Google Sheet as a CSV (File > Share > Publish to web > CSV). Copy and paste the link here.
-              </small>
-            </div>
-            <div class="form-group">
-              <label for="settings-about-url">Google Docs About Section URL</label>
-              <input type="url" id="settings-about-url" placeholder="https://docs.google.com/document/d/.../edit" />
-              <small class="form-help">
-                Link to a Google Doc describing the about section. Ensure the document is shared as "Anyone with link can view".
-              </small>
-            </div>
-            <div class="form-group">
-              <label for="settings-logs-url">Google Docs Logs Section URL</label>
-              <input type="url" id="settings-logs-url" placeholder="https://docs.google.com/document/d/.../edit" />
-              <small class="form-help">
-                Link to a Google Doc containing your daily diary logs (formatted in Markdown). Ensure it is shared as "Anyone with link can view".
-              </small>
-            </div>
-            <div class="settings-actions">
-              <button id="btn-save-settings" class="primary-btn">Save Settings</button>
-              <button id="btn-reset-settings" class="secondary-btn">Reset All Settings</button>
-            </div>
-            
-            <hr class="settings-divider" />
-            
-            <div class="instructions-section">
-              <h4>Local Folder Files</h4>
-              <p>You can manage and edit the app data directly in the source directory:</p>
-              <ul>
-                <li><strong>Timetable backup:</strong> <code>content/timetable.csv</code></li>
-                <li><strong>About description:</strong> <code>content/about.md</code></li>
-                <li><strong>Daily diary logs:</strong> <code>content/logs.md</code></li>
-              </ul>
-              <small class="text-muted">Rebuild the application or run deployment script to update the changes on the web.</small>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Main TS app -->
     <script type="module" src="/src/main.ts"></script>

@@ -17,12 +17,21 @@ interface LogEntry {
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const ESTONIAN_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
+const DAY_LABELS: {[key: string]: string} = {
+  Monday: 'E', Tuesday: 'T', Wednesday: 'K', Thursday: 'N',
+  Friday: 'R', Saturday: 'L', Sunday: 'P',
+};
+const DAY_LABELS_FULL: {[key: string]: string} = {
+  Monday: 'Esmaspäev', Tuesday: 'Teisipäev', Wednesday: 'Kolmapäev',
+  Thursday: 'Neljapäev', Friday: 'Reede', Saturday: 'Laupäev', Sunday: 'Pühapäev',
+};
+
 // State object
 const state = {
   currentDate: new Date(),
   timetable: [] as TimetableRow[],
   logs: new Map<string, LogEntry>(),
-  activeTab: 'today',
+  activeTab: 'week',
   selectedLogDate: '',
 };
 
@@ -163,16 +172,16 @@ function switchTab(tabName: string) {
   if (els.mainHeading) {
     switch (tabName) {
       case 'today':
-        els.mainHeading.textContent = "Kaareke Schedule";
+        els.mainHeading.textContent = "Tänane päev";
         break;
       case 'week':
-        els.mainHeading.textContent = "Weekly Overview";
+        els.mainHeading.textContent = "Nädalavaade";
         break;
       case 'logs':
-        els.mainHeading.textContent = "Kindergarten Diary";
+        els.mainHeading.textContent = "Päevik";
         break;
       case 'about':
-        els.mainHeading.textContent = "About Kaareke";
+        els.mainHeading.textContent = "Info";
         break;
     }
   }
@@ -369,7 +378,7 @@ function renderTodaySchedule() {
   });
 
   if (sortedRows.length === 0) {
-    els.timelineSlotsContainer.innerHTML = `<div class="empty-state"><p>No timetable data loaded.</p></div>`;
+    els.timelineSlotsContainer.innerHTML = `<div class="empty-state"><p>Tunniplaan puudub.</p></div>`;
     return;
   }
 
@@ -408,9 +417,9 @@ function renderTodaySchedule() {
       <div class="slot-time">${formatTimeDisplay(row.time)}</div>
       <div class="slot-activity">
         <span class="slot-icon">${icon}</span>
-        <span>${hasContent ? value : '<span class="text-muted">No scheduled activity</span>'}</span>
+        <span>${hasContent ? value : '<span class="text-muted">Tegevus puudub</span>'}</span>
       </div>
-      <span class="slot-indicator">Active</span>
+      <span class="slot-indicator">Aktiivne</span>
     `;
     
     els.timelineSlotsContainer?.appendChild(slotEl);
@@ -420,14 +429,14 @@ function renderTodaySchedule() {
   if (els.currentActivityCard) {
     if (activeRowIndex !== -1) {
       const activeRow = sortedRows[activeRowIndex];
-      const activeName = activeRow.days[dayName] || 'Free Play';
+      const activeName = activeRow.days[dayName] || 'Vaba mäng';
       
       let nextRowTime = '';
-      let nextName = 'Closing';
+      let nextName = 'Lõpp';
       if (activeRowIndex < sortedRows.length - 1) {
         const nextRow = sortedRows[activeRowIndex + 1];
         nextRowTime = formatTimeDisplay(nextRow.time);
-        nextName = nextRow.days[dayName] || 'Free Time';
+        nextName = nextRow.days[dayName] || 'Vaba aeg';
       }
 
       if (els.currentActivityName) els.currentActivityName.textContent = activeName;
@@ -446,21 +455,19 @@ function renderTodaySchedule() {
       }
       
       if (els.nextActivityText) {
-        els.nextActivityText.textContent = nextRowTime ? `Next: ${nextName} at ${nextRowTime}` : `Next: Closed`;
+        els.nextActivityText.textContent = nextRowTime ? `Järgmine: ${nextName} kell ${nextRowTime}` : `Järgmine: Lõpp`;
       }
       els.currentActivityCard.style.display = 'block';
     } else {
-      // Out of active hours or weekend with empty schedule
-      if (els.currentActivityName) els.currentActivityName.textContent = "Kindergarten Closed";
-      if (els.currentActivityTime) els.currentActivityTime.textContent = "Hours: 07:00 AM - 08:00 PM";
+      if (els.currentActivityName) els.currentActivityName.textContent = "Lasterühm suletud";
+      if (els.currentActivityTime) els.currentActivityTime.textContent = "Prooviaeg: 10:00 – 12:00";
       if (els.nextActivityText) {
-        // Find first slot of tomorrow
         const tomorrow = new Date(state.currentDate);
         tomorrow.setDate(tomorrow.getDate() + 1);
         const tomorrowDay = DAY_NAMES[tomorrow.getDay()];
         const firstSlot = sortedRows[0];
-        const firstActivity = firstSlot ? (firstSlot.days[tomorrowDay] || 'Arrival') : '';
-        els.nextActivityText.textContent = firstSlot ? `Tomorrow: ${firstActivity} at ${formatTimeDisplay(firstSlot.time)}` : '';
+        const firstActivity = firstSlot ? (firstSlot.days[tomorrowDay] || 'Saabumine') : '';
+        els.nextActivityText.textContent = firstSlot ? `Homme: ${firstActivity} kell ${formatTimeDisplay(firstSlot.time)}` : '';
       }
     }
   }
@@ -508,8 +515,8 @@ async function renderTodayLog() {
     els.todayLogContainer.innerHTML = `
       <div class="empty-state">
         <i data-lucide="edit-3" class="empty-icon"></i>
-        <p>No log recorded for this date yet.</p>
-        <span class="empty-subtext">You can edit the <code>content/logs.md</code> file to write daily notes!</span>
+        <p>Sellel päeval pole märkmeid.</p>
+        <span class="empty-subtext">Märkmete lisamiseks muuda faili <code>content/logs.md</code>.</span>
       </div>
     `;
     refreshIcons(els.todayLogContainer);
@@ -521,14 +528,14 @@ function renderWeekTab() {
   if (!els.weekGridHeaders || !els.weekGridBody) return;
 
   // Render headers
-  els.weekGridHeaders.innerHTML = '<th>Time</th>';
+  els.weekGridHeaders.innerHTML = '<th>Kellaaeg</th>';
   ESTONIAN_DAYS.forEach(day => {
     const isTodayColumn = DAY_NAMES[new Date().getDay()] === day;
     
     const th = document.createElement('th');
     if (isTodayColumn) th.className = 'active-day';
-    th.textContent = day.substring(0, 3); // Mon, Tue, etc.
-    th.title = day;
+    th.textContent = DAY_LABELS[day] ?? day.substring(0, 3);
+    th.title = DAY_LABELS_FULL[day] ?? day;
     
     // Clicking header navigates to that day
     th.addEventListener('click', () => {
@@ -579,7 +586,7 @@ function renderWeekTab() {
       const isCurrentDayColumn = systemDayName === day;
       if (isCurrentDayColumn && isCurrentTimeRow) {
         cell.className = 'active-cell';
-        cell.title = "Active Right Now";
+        cell.title = "Praegu aktiivne";
       }
 
       tr.appendChild(cell);
@@ -611,7 +618,7 @@ function renderLogsSidebar() {
   });
 
   if (filteredKeys.length === 0) {
-    els.logsListMenu.innerHTML = `<div style="padding: 16px; font-size:12px; color:var(--text-muted);">No logs match search</div>`;
+    els.logsListMenu.innerHTML = `<div style="padding: 16px; font-size:12px; color:var(--text-muted);">Otsing ei andnud tulemusi</div>`;
     return;
   }
 
@@ -662,8 +669,8 @@ async function renderLogDetail() {
     els.logDetailContent.innerHTML = `
       <div class="empty-state" style="padding: 80px 20px;">
         <i data-lucide="book-open" class="empty-icon"></i>
-        <p>No diary entry selected.</p>
-        <span class="empty-subtext">Select a date from the sidebar to view logs.</span>
+        <p>Ükski päevikmärge pole valitud.</p>
+        <span class="empty-subtext">Vali kuupäev vasakult külgribalt.</span>
       </div>
     `;
     refreshIcons(els.logDetailContent);
@@ -679,7 +686,7 @@ function navigateDay(offset: number) {
 }
 
 function formatLongDate(date: Date): string {
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString('et-EE', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -695,10 +702,9 @@ function formatISODate(date: Date): string {
 }
 
 function formatLogDateString(dateStr: string): string {
-  // Parses "2026-06-02" into "June 2, 2026"
   const [year, month, day] = dateStr.split('-').map(Number);
   const date = new Date(year, month - 1, day);
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString('et-EE', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -714,10 +720,7 @@ function timeToMinutes(timeStr: string): number {
 function formatTimeDisplay(timeStr: string): string {
   if (!timeStr) return '';
   const [h, m] = timeStr.split(':').map(Number);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const displayHour = h % 12 === 0 ? 12 : h % 12;
-  const displayMin = String(m || 0).padStart(2, '0');
-  return `${displayHour}:${displayMin} ${ampm}`;
+  return `${String(h).padStart(2, '0')}:${String(m || 0).padStart(2, '0')}`;
 }
 
 function isSameDay(d1: Date, d2: Date): boolean {
@@ -728,6 +731,7 @@ function isSameDay(d1: Date, d2: Date): boolean {
 
 function getActivityIcon(activity: string): string {
   const val = activity.toLowerCase();
+  if (val.includes('prooviaeg') || val.includes('proov')) return '🌟';
   if (val.includes('breakfast') || val.includes('eat') || val.includes('meal')) return '🍳';
   if (val.includes('lunch') || val.includes('soup') || val.includes('dinner')) return '🥣';
   if (val.includes('snack') || val.includes('fruit')) return '🍎';

@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kaareke - Kindergarten Timetable & Daily Logs</title>
-    <meta name="description" content="A beautiful and intuitive schedule tracker and activity log for Kaareke Kindergarten, synced with Google Sheets." />
+    <title>Kaareke - Kodulasteaed</title>
+    <meta name="description" content="Kaareke kodulasteaia rakendus — Johannese päevakava ja päeviku jälgimiseks." />
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,25 +25,25 @@
             </svg>
             <span class="logo-text">Kaareke</span>
           </div>
-          <span class="app-subtitle">Kindergarten Tracker</span>
+          <span class="app-subtitle">Kodulasteaed</span>
         </div>
 
         <nav class="sidebar-nav">
-          <button id="nav-btn-today" class="nav-item active" data-tab="today">
+          <button id="nav-btn-today" class="nav-item" data-tab="today">
             <i data-lucide="clock" class="nav-icon"></i>
-            <span>Today's Schedule</span>
+            <span>Täna</span>
           </button>
-          <button id="nav-btn-week" class="nav-item" data-tab="week">
+          <button id="nav-btn-week" class="nav-item active" data-tab="week">
             <i data-lucide="calendar" class="nav-icon"></i>
-            <span>Weekly Grid</span>
+            <span>Nädal</span>
           </button>
           <button id="nav-btn-logs" class="nav-item" data-tab="logs">
             <i data-lucide="book-open" class="nav-icon"></i>
-            <span>Daily Logs</span>
+            <span>Päevik</span>
           </button>
           <button id="nav-btn-about" class="nav-item" data-tab="about">
             <i data-lucide="info" class="nav-icon"></i>
-            <span>About Kaareke</span>
+            <span>Info</span>
           </button>
         </nav>
 
@@ -53,21 +53,21 @@
 
       <!-- Bottom Nav for Mobile -->
       <nav class="bottom-nav">
-        <button id="mobile-nav-btn-today" class="mobile-nav-item active" data-tab="today">
+        <button id="mobile-nav-btn-today" class="mobile-nav-item" data-tab="today">
           <i data-lucide="clock"></i>
-          <span>Today</span>
+          <span>Täna</span>
         </button>
-        <button id="mobile-nav-btn-week" class="mobile-nav-item" data-tab="week">
+        <button id="mobile-nav-btn-week" class="mobile-nav-item active" data-tab="week">
           <i data-lucide="calendar"></i>
-          <span>Week</span>
+          <span>Nädal</span>
         </button>
         <button id="mobile-nav-btn-logs" class="mobile-nav-item" data-tab="logs">
           <i data-lucide="book-open"></i>
-          <span>Logs</span>
+          <span>Päevik</span>
         </button>
         <button id="mobile-nav-btn-about" class="mobile-nav-item" data-tab="about">
           <i data-lucide="info"></i>
-          <span>About</span>
+          <span>Info</span>
         </button>
       </nav>
 
@@ -76,7 +76,7 @@
         <!-- Top Status Bar -->
         <header class="main-header">
           <div class="header-left">
-            <h1 class="page-title" id="main-heading">Kaareke Dashboard</h1>
+            <h1 class="page-title" id="main-heading">Nädalavaade</h1>
             <p class="current-date-display" id="date-display">Tuesday, June 2, 2026</p>
           </div>
           <div class="header-right">
@@ -87,20 +87,20 @@
         <div class="view-viewport">
           
           <!-- TODAY VIEW -->
-          <section id="view-today" class="app-view active">
+          <section id="view-today" class="app-view">
             <div class="today-grid">
               
               <!-- Left side: Timeline -->
               <div class="timeline-column">
                 <div class="card timeline-card">
                   <div class="card-header">
-                    <h2 class="card-title">Schedule Timeline</h2>
+                    <h2 class="card-title">Päevaplaan</h2>
                     <div class="day-navigation">
-                      <button id="btn-prev-day" class="icon-btn" title="Previous Day">
+                      <button id="btn-prev-day" class="icon-btn" title="Eelmine päev">
                         <i data-lucide="chevron-left"></i>
                       </button>
-                      <button id="btn-today-day" class="text-btn">Today</button>
-                      <button id="btn-next-day" class="icon-btn" title="Next Day">
+                      <button id="btn-today-day" class="text-btn">Täna</button>
+                      <button id="btn-next-day" class="icon-btn" title="Järgmine päev">
                         <i data-lucide="chevron-right"></i>
                       </button>
                     </div>
@@ -124,25 +124,24 @@
                 <div class="card highlight-card" id="current-activity-card">
                   <div class="card-body">
                     <div class="card-accent-glow"></div>
-                    <span class="highlight-label">CURRENT STATUS</span>
-                    <h3 class="highlight-title" id="current-activity-name">Outdoor Play</h3>
-                    <p class="highlight-time" id="current-activity-time">10:00 AM - 11:00 AM</p>
-                    <div class="highlight-next" id="next-activity-text">Next: Story Time 📖 at 11:00 AM</div>
+                    <span class="highlight-label">PRAEGUNE TEGEVUS</span>
+                    <h3 class="highlight-title" id="current-activity-name">–</h3>
+                    <p class="highlight-time" id="current-activity-time"></p>
+                    <div class="highlight-next" id="next-activity-text"></div>
                   </div>
                 </div>
 
                 <!-- Day Log Card -->
                 <div class="card log-card">
                   <div class="card-header">
-                    <h2 class="card-title">Daily Log & Diary</h2>
-                    <a href="#" class="view-all-link" id="link-to-logs-tab">View All Logs</a>
+                    <h2 class="card-title">Päeva märkmed</h2>
+                    <a href="#" class="view-all-link" id="link-to-logs-tab">Kõik märkmed</a>
                   </div>
                   <div class="card-body" id="today-log-container">
-                    <!-- Loaded dynamically from logs.md for this date -->
                     <div class="empty-state">
                       <i data-lucide="edit-3" class="empty-icon"></i>
-                      <p>No log recorded for this date yet.</p>
-                      <span class="empty-subtext">You can edit the `logs.md` file in the `content` folder to log activities.</span>
+                      <p>Sellele kuupäevale pole märkmeid.</p>
+                      <span class="empty-subtext">Muuda faili <code>content/logs.md</code>, et lisada märkmeid.</span>
                     </div>
                   </div>
                 </div>
@@ -152,18 +151,35 @@
           </section>
 
           <!-- WEEK VIEW -->
-          <section id="view-week" class="app-view">
+          <section id="view-week" class="app-view active">
+            <div class="card intro-card" style="margin-bottom: 16px;">
+              <div class="card-body">
+                <p style="margin: 0; line-height: 1.7; color: var(--text-secondary);">
+                  Johannes võiks hakata tööpäevadel koos minuga Ihastes käima ja ma võtaksin sinna endale abilise.
+                  Ma mõtlen seda tõesti abilisena mulle, mitte kohustusena sulle. Mina saaksin teisel korrusel tööd teha
+                  ning Johannes saaks allkorrusel või õues lapsehoidjaga toimetada. See oleks natuke nagu lasteaia
+                  pehmem variant, aga ilma haigusteta ja ühe täiskasvanu individuaalsema toega.
+                </p>
+                <p style="margin: 12px 0 0; line-height: 1.7; color: var(--text-secondary);">
+                  Ma tõesti usun, et kui me leiame õige inimese, siis võiks see Johannesele päris meeldida. Johannes
+                  on suur ja tubli poiss ning üks rahulik täiskasvanu saab temaga kindlasti hästi hakkama. Mina oleksin
+                  samas majas olemas ja saaksin vajadusel toetada, aga see vajadus oleks tõenäoliselt palju väiksem
+                  kui praegu. Kui meil tekib selle inimese vastu usaldus, saaksin mina sealt edasi vahel ka trennis
+                  või muudes taastumiseks vajalikes asjades käia.
+                </p>
+              </div>
+            </div>
             <div class="card week-card">
               <div class="card-header">
-                <h2 class="card-title">Weekly Timetable</h2>
-                <span class="card-subtitle">Select a day to view its detailed timeline</span>
+                <h2 class="card-title">Nädalaplaan</h2>
+                <span class="card-subtitle">Vali päev, et näha päevaplaani</span>
               </div>
               <div class="card-body">
                 <div class="week-grid-wrapper">
                   <table class="week-grid-table" id="week-grid-table">
                     <thead>
                       <tr id="week-grid-headers">
-                        <th>Time</th>
+                        <th>Aeg</th>
                         <!-- Dynamic headers -->
                       </tr>
                     </thead>
@@ -183,7 +199,7 @@
               <aside class="logs-sidebar">
                 <div class="search-box">
                   <i data-lucide="search" class="search-icon"></i>
-                  <input type="text" id="log-search-input" placeholder="Search logs..." />
+                  <input type="text" id="log-search-input" placeholder="Otsi märkmeid..." />
                 </div>
                 <div class="logs-list-menu" id="logs-list-menu">
                   <!-- Dynamically populated dates -->

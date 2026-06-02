@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kaareke - Kindergarten Timetable & Daily Logs</title>
+    <meta name="description" content="A beautiful and intuitive schedule tracker and activity log for Kaareke Kindergarten, synced with Google Sheets." />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <div id="app" class="app-container">
+      <!-- Sidebar / Navigation -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="logo-text">Kaareke</span>
+          </div>
+          <span class="app-subtitle">Kindergarten Tracker</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button id="nav-btn-today" class="nav-item active" data-tab="today">
+            <i data-lucide="clock" class="nav-icon"></i>
+            <span>Today's Schedule</span>
+          </button>
+          <button id="nav-btn-week" class="nav-item" data-tab="week">
+            <i data-lucide="calendar" class="nav-icon"></i>
+            <span>Weekly Grid</span>
+          </button>
+          <button id="nav-btn-logs" class="nav-item" data-tab="logs">
+            <i data-lucide="book-open" class="nav-icon"></i>
+            <span>Daily Logs</span>
+          </button>
+          <button id="nav-btn-about" class="nav-item" data-tab="about">
+            <i data-lucide="info" class="nav-icon"></i>
+            <span>About Kaareke</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button id="btn-settings" class="footer-btn">
+            <i data-lucide="settings" class="footer-btn-icon"></i>
+            <span>Settings</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Bottom Nav for Mobile -->
+      <nav class="bottom-nav">
+        <button id="mobile-nav-btn-today" class="mobile-nav-item active" data-tab="today">
+          <i data-lucide="clock"></i>
+          <span>Today</span>
+        </button>
+        <button id="mobile-nav-btn-week" class="mobile-nav-item" data-tab="week">
+          <i data-lucide="calendar"></i>
+          <span>Week</span>
+        </button>
+        <button id="mobile-nav-btn-logs" class="mobile-nav-item" data-tab="logs">
+          <i data-lucide="book-open"></i>
+          <span>Logs</span>
+        </button>
+        <button id="mobile-nav-btn-about" class="mobile-nav-item" data-tab="about">
+          <i data-lucide="info"></i>
+          <span>About</span>
+        </button>
+        <button id="mobile-btn-settings" class="mobile-nav-item">
+          <i data-lucide="settings"></i>
+          <span>Settings</span>
+        </button>
+      </nav>
+
+      <!-- Main Panel -->
+      <main class="main-content">
+        <!-- Top Status Bar -->
+        <header class="main-header">
+          <div class="header-left">
+            <h1 class="page-title" id="main-heading">Kaareke Dashboard</h1>
+            <p class="current-date-display" id="date-display">Tuesday, June 2, 2026</p>
+          </div>
+          <div class="header-right">
+            <span id="data-status-badge" class="status-badge local">
+              <span class="status-dot"></span>
+              <span class="status-text">Local CSV</span>
+            </span>
+          </div>
+        </header>
+
+        <!-- Dynamic Views Container -->
+        <div class="view-viewport">
+          
+          <!-- TODAY VIEW -->
+          <section id="view-today" class="app-view active">
+            <div class="today-grid">
+              
+              <!-- Left side: Timeline -->
+              <div class="timeline-column">
+                <div class="card timeline-card">
+                  <div class="card-header">
+                    <h2 class="card-title">Schedule Timeline</h2>
+                    <div class="day-navigation">
+                      <button id="btn-prev-day" class="icon-btn" title="Previous Day">
+                        <i data-lucide="chevron-left"></i>
+                      </button>
+                      <button id="btn-today-day" class="text-btn">Today</button>
+                      <button id="btn-next-day" class="icon-btn" title="Next Day">
+                        <i data-lucide="chevron-right"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <!-- Progress meter -->
+                    <div class="day-progress-container">
+                      <div class="day-progress-bar" id="day-progress-bar"></div>
+                    </div>
+                    
+                    <div class="timeline-slots" id="timeline-slots-container">
+                      <!-- Dynamically filled with hour slots -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right side: Quick Info & Today's Log -->
+              <div class="info-column">
+                <!-- Quick Info Card -->
+                <div class="card highlight-card" id="current-activity-card">
+                  <div class="card-body">
+                    <div class="card-accent-glow"></div>
+                    <span class="highlight-label">CURRENT STATUS</span>
+                    <h3 class="highlight-title" id="current-activity-name">Outdoor Play</h3>
+                    <p class="highlight-time" id="current-activity-time">10:00 AM - 11:00 AM</p>
+                    <div class="highlight-next" id="next-activity-text">Next: Story Time 📖 at 11:00 AM</div>
+                  </div>
+                </div>
+
+                <!-- Day Log Card -->
+                <div class="card log-card">
+                  <div class="card-header">
+                    <h2 class="card-title">Daily Log & Diary</h2>
+                    <a href="#" class="view-all-link" id="link-to-logs-tab">View All Logs</a>
+                  </div>
+                  <div class="card-body" id="today-log-container">
+                    <!-- Loaded dynamically from logs.md for this date -->
+                    <div class="empty-state">
+                      <i data-lucide="edit-3" class="empty-icon"></i>
+                      <p>No log recorded for this date yet.</p>
+                      <span class="empty-subtext">You can edit the `logs.md` file in the `content` folder to log activities.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- WEEK VIEW -->
+          <section id="view-week" class="app-view">
+            <div class="card week-card">
+              <div class="card-header">
+                <h2 class="card-title">Weekly Timetable</h2>
+                <span class="card-subtitle">Select a day to view its detailed timeline</span>
+              </div>
+              <div class="card-body">
+                <div class="week-grid-wrapper">
+                  <table class="week-grid-table" id="week-grid-table">
+                    <thead>
+                      <tr id="week-grid-headers">
+                        <th>Time</th>
+                        <!-- Dynamic headers -->
+                      </tr>
+                    </thead>
+                    <tbody id="week-grid-body">
+                      <!-- Dynamic rows -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- LOGS VIEW -->
+          <section id="view-logs" class="app-view">
+            <div class="logs-container">
+              <!-- Logs Sidebar -->
+              <aside class="logs-sidebar">
+                <div class="search-box">
+                  <i data-lucide="search" class="search-icon"></i>
+                  <input type="text" id="log-search-input" placeholder="Search logs..." />
+                </div>
+                <div class="logs-list-menu" id="logs-list-menu">
+                  <!-- Dynamically populated dates -->
+                </div>
+              </aside>
+              <!-- Log Detail Content -->
+              <article class="log-detail-card card">
+                <div class="card-body" id="log-detail-content">
+                  <!-- Dynamically populated log HTML -->
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- ABOUT VIEW -->
+          <section id="view-about" class="app-view">
+            <article class="about-card card">
+              <div class="card-body" id="about-content">
+                <!-- Dynamically populated about HTML -->
+              </div>
+            </article>
+          </section>
+
+        </div>
+      </main>
+
+      <!-- Settings Modal -->
+      <div class="modal-overlay" id="settings-modal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3>Configuration & Settings</h3>
+            <button id="btn-close-settings" class="modal-close-btn">
+              <i data-lucide="x"></i>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="settings-sheet-url">Google Sheets CSV URL</label>
+              <input type="url" id="settings-sheet-url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" />
+              <small class="form-help">
+                To sync your schedule: Publish your Google Sheet as a CSV (File > Share > Publish to web > CSV). Copy and paste the link here.
+              </small>
+            </div>
+            <div class="settings-actions">
+              <button id="btn-save-settings" class="primary-btn">Save Settings</button>
+              <button id="btn-reset-settings" class="secondary-btn">Reset to Default CSV</button>
+            </div>
+            
+            <hr class="settings-divider" />
+            
+            <div class="instructions-section">
+              <h4>Local Folder Files</h4>
+              <p>You can manage and edit the app data directly in the source directory:</p>
+              <ul>
+                <li><strong>Timetable backup:</strong> <code>content/timetable.csv</code></li>
+                <li><strong>About description:</strong> <code>content/about.md</code></li>
+                <li><strong>Daily diary logs:</strong> <code>content/logs.md</code></li>
+              </ul>
+              <small class="text-muted">Rebuild the application or run deployment script to update the changes on the web.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main TS app -->
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

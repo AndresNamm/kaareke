@@ -5,12 +5,6 @@ vahel tööpäevadel issiga lasteaeda kaasa tulema. Ehk teisisõnu tekiks talle 
 "issi-lasteaed" - koht, kus issi on samas majas olemas, aga päev ise on üles ehitatud päris
 lasteaia loogikaga.
 
-Mina saaksin teisel korrusel tööd teha, samal ajal kui Johannes oleks allkorrusel või õues koos
-hoidjaga, kes on päriselt kohal ainult tema jaoks. See annaks talle kõik olulise, mis heas
-lasteaia päevas olemas on: kindla rütmi, tegevused, õuesoleku, söögipausid, puhkehetked ja
-täiskasvanu tähelepanu. Vahe on lihtsalt selles, et see oleks palju pehmem, väiksem ja
-individuaalsem formaat.
-
 Selle kontseptsiooniga saaks üles ehitada peaaegu kõik need head asjad, mis ühes toimivas lasteaias
 niikuinii olemas on. Tal võiks olla oma tegevuskava, päevaplaan, päevalogi, harjumuste jälgimine,
 väikesed õpi- ja mängutegevused, õueskäigud, loomingulised hetked ja rahulikud üleminekud ühest
@@ -23,7 +17,7 @@ saaksin mina ise kohe appi tulla. Samal ajal ei oleks seda suurt rühmaefekti, k
 katkematu ringina kodu ja lasteaia vahet. Ehk väiksem kokkupuutering võiks tähendada ka seda, et
 Johannes ei too Lilile koju pidevalt uusi tõbesid.
 
-Mulle tundub, et kui leiame sooja, usaldusväärse ja Johannesele sobiva inimese, võiks see olla talle
+Mulle tundub, et kui leiame sooja, usaldusväärse ja Johannesele sobiva hoidja, võiks see olla talle
 väga mõnus lahendus: ühelt poolt päris lasteaia tunne ja päevastruktuur, teiselt poolt kodusem,
 rahulikum ja turvalisem olemine. Ja ausalt, mõte sellest, et Johannes käib issiga lasteaias, on ju
 iseenesest juba natuke naljakas ja väga armas.

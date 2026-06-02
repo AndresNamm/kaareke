@@ -4,7 +4,7 @@ Tere tulemast **Kaareke kodulasteaia** infoleheküljele! See rakendus aitab jäl
 
 ## Lasteaia info
 
-- **Asukoht:** Ihastes, Tallinn
+- **Asukoht:** Ihastes
 - **Prooviaeg:** 10:00 – 12:00 (teisipäev, kolmapäev, reede, pühapäev)
 - **Kontseptsioon:** Üks rahulik täiskasvanu, individuaalne lähenemine, ilma haigusteta.
 

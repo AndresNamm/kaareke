@@ -232,9 +232,44 @@ async function loadIntroContent() {
     return;
   }
 
-  const words = md.trim().split(/\s+/);
   const PREVIEW_WORDS = 40;
-  const previewMd = words.slice(0, PREVIEW_WORDS).join(' ') + (words.length > PREVIEW_WORDS ? '…' : '');
+  const trimmedMd = md.trim();
+  const lines = trimmedMd.split(/\r?\n/);
+  const firstContentLine = lines.find((line) => line.trim().length > 0) ?? '';
+  const headingLine = /^#{1,6}\s+/.test(firstContentLine) ? firstContentLine.trim() : '';
+  const bodyMd = headingLine
+    ? trimmedMd.slice(trimmedMd.indexOf(firstContentLine) + firstContentLine.length).trim()
+    : trimmedMd;
+
+  let previewWordCount = 0;
+  const previewParagraphs: string[] = [];
+
+  for (const paragraph of bodyMd.split(/\n\s*\n/)) {
+    const trimmedParagraph = paragraph.trim();
+    if (!trimmedParagraph) {
+      continue;
+    }
+
+    const paragraphWords = trimmedParagraph.split(/\s+/);
+    const remainingWords = PREVIEW_WORDS - previewWordCount;
+
+    if (remainingWords <= 0) {
+      break;
+    }
+
+    if (paragraphWords.length <= remainingWords) {
+      previewParagraphs.push(trimmedParagraph);
+      previewWordCount += paragraphWords.length;
+      continue;
+    }
+
+    previewParagraphs.push(`${paragraphWords.slice(0, remainingWords).join(' ')}…`);
+    previewWordCount = PREVIEW_WORDS;
+    break;
+  }
+
+  const previewSections = [headingLine, ...previewParagraphs].filter(Boolean);
+  const previewMd = previewSections.join('\n\n');
   const fullHtml = await marked.parse(md);
   const previewHtml = await marked.parse(previewMd);
 

@@ -74,18 +74,26 @@ Write standard markdown about contacts, teachers, or groups:
 
 ---
 
-## 📊 How to Connect Google Sheets
+## 📊 How to Sync Google Sheets & Google Docs
 
-To link the app's schedule to a Google Sheet:
+To run the application dynamically from the cloud, you can connect your own Google Sheets (for the schedule) and Google Docs (for Markdown inputs).
+
+### 1. Connect Google Sheets (Schedule)
 1. Open Google Sheets and create a sheet.
 2. Structure the sheet with columns starting with `Time` followed by the days of the week:
    `Time, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday`.
 3. Set the first column rows to hours (e.g., `07:00`, `08:00` ... `20:00`). Fill cell values with activities.
 4. Go to **File** > **Share** > **Publish to web**.
-5. Select the **Link** tab, select your specific sheet name, select **Comma-separated values (.csv)** as the output, and click **Publish**.
-6. Copy the generated link (e.g., `https://docs.google.com/spreadsheets/d/.../pub?output=csv`).
-7. Open the Kaareke App, click **Settings** (gear icon in the footer/bottom nav), paste the URL, and click **Save Settings**.
-8. The dashboard will instantly sync with your Google Sheet schedule!
+5. Select the **Link** tab, choose your specific sheet, choose **Comma-separated values (.csv)**, and click **Publish**.
+6. Copy the published link (e.g., `https://docs.google.com/spreadsheets/d/.../pub?output=csv`) and paste it into the **Google Sheets CSV URL** field in the Settings panel.
+
+### 2. Connect Google Docs (About & Diary Logs)
+1. Create a Google Doc for the **About** description (or use your existing one).
+2. Create another Google Doc for your **Daily Logs** (you can write standard Markdown inside it, using `## YYYY-MM-DD` headers for entries).
+3. In each Google Doc, click the **Share** button in the top right corner and set general access to **"Anyone with the link can view"** (this is required so the app can read it).
+4. Copy the browser address link for each document (e.g., `https://docs.google.com/document/d/<DOC_ID>/edit`).
+5. Open the Settings panel in the app (gear icon in the sidebar or bottom mobile nav), paste the document links into their respective fields (**Google Docs About URL** and **Google Docs Logs URL**), and click **Save Settings**.
+6. The app will fetch the plain text markdown of the docs, render it, and display a green **Synced with Google Docs** badge. If offline or unconfigured, it falls back to your local `content/about.md` and `content/logs.md` files automatically.
 
 ---
 

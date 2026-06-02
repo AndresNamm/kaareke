@@ -39,6 +39,7 @@ const state = {
 const DEFAULT_TIMETABLE_PATH = 'content/timetable.csv';
 const DEFAULT_ABOUT_PATH = 'content/about.md';
 const DEFAULT_LOGS_PATH = 'content/logs.md';
+const DEFAULT_INTRO_PATH = 'content/intro.md';
 
 // Elements Cache
 let els: { [key: string]: HTMLElement | null } = {};
@@ -81,6 +82,7 @@ function cacheElements() {
     linkToLogsTab: document.getElementById('link-to-logs-tab'),
     
     // Week Tab
+    weekIntroContent: document.getElementById('week-intro-content'),
     weekGridHeaders: document.getElementById('week-grid-headers'),
     weekGridBody: document.getElementById('week-grid-body'),
     
@@ -193,7 +195,8 @@ async function initApp() {
   await Promise.all([
     loadTimetable(),
     loadAboutContent(),
-    loadLogsContent()
+    loadLogsContent(),
+    loadIntroContent()
   ]);
   renderAll();
 }
@@ -213,6 +216,23 @@ async function loadTimetable() {
 09:00,Closed,Closed,Closed,Closed,Closed,Closed,Closed`;
   }
   state.timetable = parseCSV(csvText);
+}
+
+async function loadIntroContent() {
+  let md = '';
+  try {
+    const res = await fetch(DEFAULT_INTRO_PATH);
+    if (!res.ok) throw new Error('Local intro.md fetch failed');
+    md = await res.text();
+  } catch (e) {
+    md = '';
+  }
+  if (els.weekIntroContent && md.trim()) {
+    const html = await marked.parse(md);
+    els.weekIntroContent.innerHTML = html;
+  } else if (els.weekIntroContent) {
+    (els.weekIntroContent.closest('.intro-card') as HTMLElement | null)?.style.setProperty('display', 'none');
+  }
 }
 
 async function loadAboutContent() {

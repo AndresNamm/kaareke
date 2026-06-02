@@ -11,6 +11,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BUILD_DIR="$REPO_ROOT/build"
 SOURCE_SHA="$(git rev-parse --short HEAD 2>/dev/null || echo "initial")"
 DEPLOY_MARKER="$(date -u +%Y%m%dT%H%M%SZ)-$SOURCE_SHA"
+CURRENT_BRANCH="$(git branch --show-current)"
 
 cd "$REPO_ROOT"
 
@@ -37,7 +38,7 @@ if ! git rev-parse --verify "$BRANCH" >/dev/null 2>&1; then
       git checkout -b "$BRANCH"
       git commit --allow-empty -m "Initial $BRANCH commit"
       git push "$REMOTE" "$BRANCH" || true
-      git checkout -
+      git checkout "$CURRENT_BRANCH"
     else
       echo "No remote $REMOTE found. Doing local deployment prep."
     fi
@@ -54,7 +55,7 @@ else
     git checkout --orphan "$BRANCH"
     git rm -rf .
     git commit --allow-empty -m "Initial $BRANCH commit"
-    git checkout -
+    git checkout "$CURRENT_BRANCH"
   fi
   git worktree add --detach "$WORKTREE_DIR" "$BRANCH"
 fi

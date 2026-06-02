@@ -28,9 +28,9 @@ const state = {
 };
 
 // Default paths (copied from content directory)
-const DEFAULT_TIMETABLE_PATH = '/content/timetable.csv';
-const DEFAULT_ABOUT_PATH = '/content/about.md';
-const DEFAULT_LOGS_PATH = '/content/logs.md';
+const DEFAULT_TIMETABLE_PATH = 'content/timetable.csv';
+const DEFAULT_ABOUT_PATH = 'content/about.md';
+const DEFAULT_LOGS_PATH = 'content/logs.md';
 
 // Elements Cache
 let els: { [key: string]: HTMLElement | null } = {};

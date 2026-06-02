@@ -227,12 +227,33 @@ async function loadIntroContent() {
   } catch (e) {
     md = '';
   }
-  if (els.weekIntroContent && md.trim()) {
-    const html = await marked.parse(md);
-    els.weekIntroContent.innerHTML = html;
-  } else if (els.weekIntroContent) {
-    (els.weekIntroContent.closest('.intro-card') as HTMLElement | null)?.style.setProperty('display', 'none');
+  if (!els.weekIntroContent || !md.trim()) {
+    (els.weekIntroContent?.closest('.intro-card') as HTMLElement | null)?.style.setProperty('display', 'none');
+    return;
   }
+
+  const words = md.trim().split(/\s+/);
+  const PREVIEW_WORDS = 40;
+  const previewMd = words.slice(0, PREVIEW_WORDS).join(' ') + (words.length > PREVIEW_WORDS ? '…' : '');
+  const fullHtml = await marked.parse(md);
+  const previewHtml = await marked.parse(previewMd);
+
+  els.weekIntroContent.innerHTML = `
+    <div class="intro-preview">${previewHtml}</div>
+    <div class="intro-full" style="display:none">${fullHtml}</div>
+    <button class="intro-toggle-btn" aria-expanded="false">Loe edasi</button>
+  `;
+
+  els.weekIntroContent.querySelector('.intro-toggle-btn')?.addEventListener('click', (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    const preview = els.weekIntroContent!.querySelector('.intro-preview') as HTMLElement;
+    const full = els.weekIntroContent!.querySelector('.intro-full') as HTMLElement;
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    preview.style.display = expanded ? '' : 'none';
+    full.style.display = expanded ? 'none' : '';
+    btn.textContent = expanded ? 'Loe edasi' : 'Peida';
+    btn.setAttribute('aria-expanded', String(!expanded));
+  });
 }
 
 async function loadAboutContent() {

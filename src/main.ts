@@ -26,6 +26,10 @@ const state = {
   selectedLogDate: '',
   isOnlineSource: false,
   sheetUrl: localStorage.getItem('kaareke_sheet_url') || '',
+  aboutUrl: localStorage.getItem('kaareke_about_url') || '',
+  logsUrl: localStorage.getItem('kaareke_logs_url') || '',
+  isAboutOnline: false,
+  isLogsOnline: false,
 };
 
 // Default paths (copied from content directory)
@@ -64,6 +68,8 @@ function cacheElements() {
     btnSaveSettings: document.getElementById('btn-save-settings'),
     btnResetSettings: document.getElementById('btn-reset-settings'),
     inputSheetUrl: document.getElementById('settings-sheet-url') as HTMLInputElement | null,
+    inputAboutUrl: document.getElementById('settings-about-url') as HTMLInputElement | null,
+    inputLogsUrl: document.getElementById('settings-logs-url') as HTMLInputElement | null,
     
     // Main Headers
     mainHeading: document.getElementById('main-heading'),
@@ -113,6 +119,8 @@ function wireEvents() {
   // Settings Modal toggles
   const openSettings = () => {
     if (els.inputSheetUrl) (els.inputSheetUrl as HTMLInputElement).value = state.sheetUrl;
+    if (els.inputAboutUrl) (els.inputAboutUrl as HTMLInputElement).value = state.aboutUrl;
+    if (els.inputLogsUrl) (els.inputLogsUrl as HTMLInputElement).value = state.logsUrl;
     els.settingsModal?.classList.add('active');
   };
   
@@ -132,17 +140,41 @@ function wireEvents() {
       } else {
         localStorage.removeItem('kaareke_sheet_url');
       }
-      els.settingsModal?.classList.remove('active');
-      loadTimetable().then(() => renderAll());
     }
+    if (els.inputAboutUrl) {
+      const url = (els.inputAboutUrl as HTMLInputElement).value.trim();
+      state.aboutUrl = url;
+      if (url) {
+        localStorage.setItem('kaareke_about_url', url);
+      } else {
+        localStorage.removeItem('kaareke_about_url');
+      }
+    }
+    if (els.inputLogsUrl) {
+      const url = (els.inputLogsUrl as HTMLInputElement).value.trim();
+      state.logsUrl = url;
+      if (url) {
+        localStorage.setItem('kaareke_logs_url', url);
+      } else {
+        localStorage.removeItem('kaareke_logs_url');
+      }
+    }
+    els.settingsModal?.classList.remove('active');
+    Promise.all([loadTimetable(), loadAboutContent(), loadLogsContent()]).then(() => renderAll());
   });
 
   els.btnResetSettings?.addEventListener('click', () => {
     localStorage.removeItem('kaareke_sheet_url');
+    localStorage.removeItem('kaareke_about_url');
+    localStorage.removeItem('kaareke_logs_url');
     state.sheetUrl = '';
+    state.aboutUrl = '';
+    state.logsUrl = '';
     if (els.inputSheetUrl) (els.inputSheetUrl as HTMLInputElement).value = '';
+    if (els.inputAboutUrl) (els.inputAboutUrl as HTMLInputElement).value = '';
+    if (els.inputLogsUrl) (els.inputLogsUrl as HTMLInputElement).value = '';
     els.settingsModal?.classList.remove('active');
-    loadTimetable().then(() => renderAll());
+    Promise.all([loadTimetable(), loadAboutContent(), loadLogsContent()]).then(() => renderAll());
   });
 
   // Today Tab Day Controls
@@ -283,36 +315,86 @@ async function fetchLocalCSV(): Promise<string> {
 }
 
 async function loadAboutContent() {
+  let md = '';
+  let isDocOnline = false;
+  
+  if (state.aboutUrl) {
+    try {
+      const exportUrl = getGoogleDocExportUrl(state.aboutUrl);
+      const res = await fetch(exportUrl);
+      if (!res.ok) throw new Error('Google Doc fetch failed');
+      md = await res.text();
+      isDocOnline = true;
+    } catch (e) {
+      console.warn("Failed to load Google Doc for About, falling back to local file", e);
+      md = await fetchLocalAbout();
+      isDocOnline = false;
+    }
+  } else {
+    md = await fetchLocalAbout();
+    isDocOnline = false;
+  }
+  
+  state.isAboutOnline = isDocOnline;
+  
+  if (els.aboutContent) {
+    const html = await marked.parse(md);
+    const badgeHTML = isDocOnline 
+      ? `<div style="display: flex; justify-content: flex-end; margin-bottom: 12px;"><span class="status-badge online"><span class="status-dot"></span><span class="status-text">Synced with Google Docs</span></span></div>`
+      : `<div style="display: flex; justify-content: flex-end; margin-bottom: 12px;"><span class="status-badge local"><span class="status-dot"></span><span class="status-text">Local File Backup</span></span></div>`;
+    els.aboutContent.innerHTML = badgeHTML + html;
+    refreshIcons(els.aboutContent);
+  }
+}
+
+async function fetchLocalAbout(): Promise<string> {
   try {
     const res = await fetch(DEFAULT_ABOUT_PATH);
     if (!res.ok) throw new Error('Local about.md fetch failed');
-    const md = await res.text();
-    if (els.aboutContent) {
-      els.aboutContent.innerHTML = await marked.parse(md);
-      refreshIcons(els.aboutContent);
-    }
+    return await res.text();
   } catch (e) {
-    if (els.aboutContent) {
-      els.aboutContent.innerHTML = `<p class="text-muted">Failed to load about section. Please make sure content/about.md exists.</p>`;
-    }
+    return `# About Kaareke\n\nFailed to load local about section. Make sure content/about.md exists.`;
   }
 }
 
 async function loadLogsContent() {
+  let md = '';
+  let isDocOnline = false;
+  
+  if (state.logsUrl) {
+    try {
+      const exportUrl = getGoogleDocExportUrl(state.logsUrl);
+      const res = await fetch(exportUrl);
+      if (!res.ok) throw new Error('Google Doc fetch failed');
+      md = await res.text();
+      isDocOnline = true;
+    } catch (e) {
+      console.warn("Failed to load Google Doc for Logs, falling back to local file", e);
+      md = await fetchLocalLogs();
+      isDocOnline = false;
+    }
+  } else {
+    md = await fetchLocalLogs();
+    isDocOnline = false;
+  }
+  
+  state.isLogsOnline = isDocOnline;
+  state.logs = parseLogs(md);
+  
+  // Set default selected log date if none is set
+  if (!state.selectedLogDate && state.logs.size > 0) {
+    const keys = Array.from(state.logs.keys()).sort((a, b) => b.localeCompare(a));
+    state.selectedLogDate = keys[0];
+  }
+}
+
+async function fetchLocalLogs(): Promise<string> {
   try {
     const res = await fetch(DEFAULT_LOGS_PATH);
     if (!res.ok) throw new Error('Local logs.md fetch failed');
-    const md = await res.text();
-    state.logs = parseLogs(md);
-    
-    // Set default selected log date if none is set
-    if (!state.selectedLogDate && state.logs.size > 0) {
-      // Get the most recent date key
-      const keys = Array.from(state.logs.keys()).sort((a, b) => b.localeCompare(a));
-      state.selectedLogDate = keys[0];
-    }
+    return await res.text();
   } catch (e) {
-    console.error("Could not load logs.md content", e);
+    return `# Kaareke Daily Logs\n\nFailed to load local logs file. Make sure content/logs.md exists.`;
   }
 }
 
@@ -735,7 +817,13 @@ async function renderLogDetail() {
       els.logDetailContent.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:16px; margin-bottom:20px;">
           <h2 style="font-family:var(--font-title); font-size:24px; font-weight:700;">${formatLogDateString(state.selectedLogDate)}</h2>
-          <span style="font-size:12px; color:var(--text-muted); font-family:monospace;">${state.selectedLogDate}</span>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span class="status-badge ${state.isLogsOnline ? 'online' : 'local'}" style="padding: 4px 10px; font-size: 10px;">
+              <span class="status-dot"></span>
+              <span class="status-text">${state.isLogsOnline ? 'Docs Synced' : 'Local File'}</span>
+            </span>
+            <span style="font-size:12px; color:var(--text-muted); font-family:monospace;">${state.selectedLogDate}</span>
+          </div>
         </div>
         <div class="markdown-body">
           ${html}
@@ -846,4 +934,17 @@ function refreshIcons(container: HTMLElement | null) {
       node: container
     });
   }
+}
+
+function getGoogleDocExportUrl(inputUrl: string): string {
+  if (!inputUrl) return '';
+  const url = inputUrl.trim();
+  if (url.includes('/export')) return url;
+  
+  // Match Google document ID
+  const match = url.match(/\/document\/d\/([a-zA-Z0-9-_]+)/);
+  if (match && match[1]) {
+    return `https://docs.google.com/document/d/${match[1]}/export?format=txt`;
+  }
+  return url;
 }

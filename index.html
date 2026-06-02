@@ -239,9 +239,23 @@
                 To sync your schedule: Publish your Google Sheet as a CSV (File > Share > Publish to web > CSV). Copy and paste the link here.
               </small>
             </div>
+            <div class="form-group">
+              <label for="settings-about-url">Google Docs About Section URL</label>
+              <input type="url" id="settings-about-url" placeholder="https://docs.google.com/document/d/.../edit" />
+              <small class="form-help">
+                Link to a Google Doc describing the about section. Ensure the document is shared as "Anyone with link can view".
+              </small>
+            </div>
+            <div class="form-group">
+              <label for="settings-logs-url">Google Docs Logs Section URL</label>
+              <input type="url" id="settings-logs-url" placeholder="https://docs.google.com/document/d/.../edit" />
+              <small class="form-help">
+                Link to a Google Doc containing your daily diary logs (formatted in Markdown). Ensure it is shared as "Anyone with link can view".
+              </small>
+            </div>
             <div class="settings-actions">
               <button id="btn-save-settings" class="primary-btn">Save Settings</button>
-              <button id="btn-reset-settings" class="secondary-btn">Reset to Default CSV</button>
+              <button id="btn-reset-settings" class="secondary-btn">Reset All Settings</button>
             </div>
             
             <hr class="settings-divider" />

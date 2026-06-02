@@ -1,0 +1,22 @@
+{
+  "user_email": "andres.namm.001@gmail.com",
+  "files": {
+    "timetable": {
+      "name": "Kaareke Timetable",
+      "source": "content/timetable.csv"
+    },
+    "about": {
+      "name": "Kaareke About",
+      "source": "content/about.md"
+    },
+    "logs": {
+      "name": "Kaareke Diary Logs",
+      "source": "content/logs.md"
+    }
+  },
+  "google_urls": {
+    "sheet_csv_url": "",
+    "about_doc_url": "",
+    "logs_doc_url": ""
+  }
+}
